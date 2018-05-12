@@ -5,7 +5,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
 import com.sasuke.imagify.R;
@@ -41,18 +45,43 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView {
 
     private ImagesAdapter mAdapter;
     private GetImagesPresenter mGetImagesPresenter;
+    private GridLayoutManager mGridLayoutManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        mRvPhotos.setLayoutManager(new GridLayoutManager(this, SPAN_COUNT));
+        mGridLayoutManager = new GridLayoutManager(this, SPAN_COUNT);
+        mRvPhotos.setLayoutManager(mGridLayoutManager);
         mRvPhotos.addItemDecoration(new ItemDecorator(0));
         mAdapter = new ImagesAdapter();
         mRvPhotos.setAdapter(mAdapter);
         mGetImagesPresenter = new GetImagePresenterImpl(this);
         getImages();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.home_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_span_size_two:
+                SPAN_COUNT = 2;
+                break;
+            case R.id.menu_span_size_three:
+                SPAN_COUNT = 3;
+                break;
+            case R.id.menu_span_size_four:
+                SPAN_COUNT = 4;
+                break;
+        }
+        mGridLayoutManager.setSpanCount(SPAN_COUNT);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
