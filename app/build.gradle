@@ -62,4 +62,16 @@ dependencies {
 
     //Logging
     implementation 'com.jakewharton.timber:timber:4.7.0'
+
+    //Snackbar
+    implementation 'com.androidadvance:topsnackbar:1.1.1'
+
+    //Toast
+    implementation 'com.github.GrenderG:Toasty:1.3.0'
+
+    //Progress Bar
+    implementation 'com.github.castorflex.smoothprogressbar:library-circular:1.3.0'
+
+    //Pagination
+    implementation 'com.github.markomilos:paginate:0.5.1'
 }
