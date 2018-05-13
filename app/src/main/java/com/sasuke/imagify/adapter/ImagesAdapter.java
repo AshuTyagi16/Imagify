@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import com.sasuke.imagify.R;
 import com.sasuke.imagify.model.pojo.Photo;
 import com.sasuke.imagify.ui.view.ImageViewHolder;
+import com.sasuke.imagify.util.Constants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +19,7 @@ import java.util.List;
 
 public class ImagesAdapter extends RecyclerView.Adapter<ImageViewHolder> {
 
-    private List<Photo> mImageList;
+    private List<Photo> mImageList = new ArrayList<>();
 
     @NonNull
     @Override
@@ -35,8 +37,10 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImageViewHolder> {
         return this.mImageList == null ? 0 : this.mImageList.size();
     }
 
-    public void setImageList(List<Photo> list) {
-        this.mImageList = list;
+    public void setImageList(List<Photo> list, int flag) {
+        if (flag == Constants.FLAG_CHANGED)
+            this.mImageList.clear();
+        this.mImageList.addAll(list);
         notifyDataSetChanged();
     }
 }

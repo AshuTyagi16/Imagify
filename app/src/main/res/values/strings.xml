@@ -4,6 +4,7 @@
 
     <!-- Content Description -->
     <string name="image">Image</string>
+    <string name="search">Search</string>
     <string name="placeholder">Placeholder</string>
 
     <!-- Loading Placeholder -->
@@ -15,4 +16,5 @@
     <string name="retry">Retry</string>
     <string name="failed">Failed</string>
 
+    <string name="no_result_placeholder">No result found :(</string>
 </resources>

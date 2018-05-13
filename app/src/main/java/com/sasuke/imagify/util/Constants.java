@@ -13,4 +13,9 @@ public class Constants {
     public static final String FORMAT = "json";
     public static final String API_KEY = "d6531fa8510d0e43fd291856b6691465";
     public static final int NO_JSON_CALLBACK = 1;
+
+    public static final int INITIAL_PAGE = 1;
+
+    public static final int FLAG_UNCHANGED = 0;
+    public static final int FLAG_CHANGED = 1;
 }

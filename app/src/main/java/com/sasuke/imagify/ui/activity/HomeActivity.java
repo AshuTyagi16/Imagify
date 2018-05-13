@@ -2,27 +2,31 @@ package com.sasuke.imagify.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import com.paginate.Paginate;
 import com.sasuke.imagify.R;
 import com.sasuke.imagify.adapter.ImagesAdapter;
 import com.sasuke.imagify.model.GetImagePresenterImpl;
 import com.sasuke.imagify.model.pojo.Result;
 import com.sasuke.imagify.presenter.GetImagesPresenter;
 import com.sasuke.imagify.ui.view.GetImagesView;
+import com.sasuke.imagify.ui.view.LoadingListItemCreator;
 import com.sasuke.imagify.util.Constants;
 import com.sasuke.imagify.util.ItemDecorator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import es.dmoral.toasty.Toasty;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 
@@ -30,41 +34,61 @@ import fr.castorflex.android.circularprogressbar.CircularProgressBar;
  * Created by abc on 5/12/2018.
  */
 
-public class HomeActivity extends AppCompatActivity implements GetImagesView {
+public class HomeActivity extends AppCompatActivity implements GetImagesView, Paginate.Callbacks {
 
     @BindView(R.id.rv_photos)
     RecyclerView mRvPhotos;
-
     @BindView(R.id.pb_images)
     CircularProgressBar mPbImages;
-
     @BindView(R.id.iv_placeholder)
     ImageView mIvPlaceholder;
-
-    private int SPAN_COUNT = 2;
+    @BindView(R.id.search_view)
+    MaterialSearchView searchView;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private ImagesAdapter mAdapter;
     private GetImagesPresenter mGetImagesPresenter;
     private GridLayoutManager mGridLayoutManager;
+
+    private int SPAN_COUNT = 2;
+
+    private LoadingListItemCreator mLoadingListItemCreator;
+    private Paginate paginate;
+    private boolean loading = false;
+    private int totalPages;
+    private int page = Constants.INITIAL_PAGE;
+
+    private String currentQuery;
+    private int flag = Constants.FLAG_UNCHANGED;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
+        setSupportActionBar(toolbar);
         mGridLayoutManager = new GridLayoutManager(this, SPAN_COUNT);
         mRvPhotos.setLayoutManager(mGridLayoutManager);
         mRvPhotos.addItemDecoration(new ItemDecorator(0));
         mAdapter = new ImagesAdapter();
         mRvPhotos.setAdapter(mAdapter);
+        mLoadingListItemCreator = new LoadingListItemCreator();
         mGetImagesPresenter = new GetImagePresenterImpl(this);
-        getImages();
+        setPagination();
+        setSearchViewListeners();
+        showSearchPlaceholder();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.home_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+
+        return true;
     }
 
     @Override
@@ -86,27 +110,67 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView {
 
     @Override
     public void onGetImageSuccess(Result result) {
-        if (result != null) {
-            mAdapter.setImageList(result.getPhotos().getPhoto());
+        loading = false;
+        if (result != null && result.getPhotos() != null && result.getPhotos().getPhoto().size() > 0) {
+            totalPages = result.getPhotos().getPages();
+            page++;
+            mAdapter.setImageList(result.getPhotos().getPhoto(), flag);
             showData();
-        } else {
+        } else if (result != null && result.getCode() != 3) {
+            showNoResultFoundPlaceholder();
+            Toasty.error(this, getString(R.string.no_result_placeholder)).show();
         }
     }
 
     @Override
     public void onGetImageFailure(Throwable throwable) {
+        loading = false;
         showErrorPlaceholder();
-        Toasty.error(this, throwable.getMessage());
+        Toasty.error(this, throwable.getMessage()).show();
     }
 
     @Override
     public void onNetworkConnectionError() {
+        loading = false;
         showConnectionPlaceholder();
-        Toasty.error(this, getString(R.string.no_internet_connection));
+        Toasty.error(this, getString(R.string.no_internet_connection)).show();
     }
 
-    private void getImages() {
-        mGetImagesPresenter.getImageForTag(Constants.METHOD, Constants.FORMAT, Constants.API_KEY, Constants.NO_JSON_CALLBACK, "delhi", 1);
+    @Override
+    public void onLoadMore() {
+        flag = Constants.FLAG_UNCHANGED;
+        loading = true;
+        getImages(currentQuery);
+    }
+
+    @Override
+    public boolean isLoading() {
+        return loading;
+    }
+
+    @Override
+    public boolean hasLoadedAllItems() {
+        return page == totalPages;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    private void getImages(String query) {
+        if (mGetImagesPresenter != null) {
+            mGetImagesPresenter.getImageForTag(Constants.METHOD,
+                    Constants.FORMAT,
+                    Constants.API_KEY,
+                    Constants.NO_JSON_CALLBACK,
+                    query,
+                    page);
+        }
     }
 
     private void showConnectionPlaceholder() {
@@ -123,9 +187,59 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView {
         mIvPlaceholder.setVisibility(View.VISIBLE);
     }
 
+    private void showSearchPlaceholder() {
+        mRvPhotos.setVisibility(View.GONE);
+        mPbImages.setVisibility(View.GONE);
+        mIvPlaceholder.setImageResource(R.drawable.placeholder_search);
+        mIvPlaceholder.setVisibility(View.VISIBLE);
+    }
+
+    private void showNoResultFoundPlaceholder() {
+        mRvPhotos.setVisibility(View.GONE);
+        mPbImages.setVisibility(View.GONE);
+        mIvPlaceholder.setImageResource(R.drawable.placeholder_no_result_found);
+        mIvPlaceholder.setVisibility(View.VISIBLE);
+    }
+
+    private void showLoadingPlaceholder() {
+        mRvPhotos.setVisibility(View.GONE);
+        mIvPlaceholder.setVisibility(View.GONE);
+        mPbImages.setVisibility(View.VISIBLE);
+    }
+
     private void showData() {
         mPbImages.setVisibility(View.GONE);
         mIvPlaceholder.setVisibility(View.GONE);
         mRvPhotos.setVisibility(View.VISIBLE);
+    }
+
+    private void setPagination() {
+        if (paginate != null)
+            paginate.unbind();
+
+        paginate = Paginate.with(mRvPhotos, this)
+                .addLoadingListItem(true)
+                .setLoadingListItemCreator(mLoadingListItemCreator)
+                .build();
+    }
+
+    private void setSearchViewListeners() {
+        searchView.setSuggestions(new String[]{"New york", "India", "Avengers", "Whore", "Starboy"});
+        searchView.showSuggestions();
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                showLoadingPlaceholder();
+                flag = Constants.FLAG_CHANGED;
+                currentQuery = query;
+                getImages(currentQuery);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
     }
 }

@@ -15,6 +15,9 @@ public class Result {
     @SerializedName("stat")
     @Expose
     private String stat;
+    @SerializedName("code")
+    @Expose
+    private int code;
 
     public Photos getPhotos() {
         return photos;
@@ -32,4 +35,11 @@ public class Result {
         this.stat = stat;
     }
 
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
 }

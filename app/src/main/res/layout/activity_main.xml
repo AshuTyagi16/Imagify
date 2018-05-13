@@ -6,10 +6,28 @@
     android:layout_height="match_parent"
     tools:context="com.sasuke.imagify.ui.activity.HomeActivity">
 
+    <FrameLayout
+        android:id="@+id/toolbar_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary" />
+
+        <com.miguelcatalan.materialsearchview.MaterialSearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_photos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar_container"
         android:visibility="gone" />
 
     <fr.castorflex.android.circularprogressbar.CircularProgressBar
