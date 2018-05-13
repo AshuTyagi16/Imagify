@@ -10,11 +10,16 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sasuke.imagify.R;
 import com.sasuke.imagify.adapter.ImagePagerAdapter;
+import com.sasuke.imagify.di.component.DaggerImagePagerComponent;
+import com.sasuke.imagify.di.component.ImagePagerComponent;
+import com.sasuke.imagify.di.module.ImagePagerFragmentModule;
 import com.sasuke.imagify.model.pojo.Photo;
 import com.sasuke.imagify.ui.activity.HomeActivity;
 
 import java.lang.reflect.Type;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 
@@ -27,8 +32,10 @@ public class ImagePagerFragment extends BaseFragment {
     @BindView(R.id.vp_images)
     ViewPager mVpImages;
 
+    @Inject
+    ImagePagerAdapter mAdapter;
+
     private List<Photo> mPhotoList;
-    private ImagePagerAdapter mAdapter;
 
     private static final String EXTRA_PHOTO_LIST = "photo_list";
 
@@ -58,7 +65,11 @@ public class ImagePagerFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAdapter = new ImagePagerAdapter(this, mPhotoList);
+        ImagePagerComponent component = DaggerImagePagerComponent.builder()
+                .imagePagerFragmentModule(new ImagePagerFragmentModule(this))
+                .build();
+        component.injectPagerFragment(this);
+        mAdapter.setPhotoList(mPhotoList);
         mVpImages.setAdapter(mAdapter);
         mVpImages.setCurrentItem(HomeActivity.currentPosition);
         mVpImages.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {

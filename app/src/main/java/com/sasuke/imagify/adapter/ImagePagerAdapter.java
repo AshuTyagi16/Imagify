@@ -16,9 +16,8 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 
     private List<Photo> mPhotoList;
 
-    public ImagePagerAdapter(Fragment fragment, List<Photo> photoList) {
+    public ImagePagerAdapter(Fragment fragment) {
         super(fragment.getChildFragmentManager());
-        this.mPhotoList = photoList;
     }
 
     @Override
@@ -28,6 +27,13 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return PhotoViewFragment.newInstance(this.mPhotoList.get(position));
+        if (this.mPhotoList != null)
+            return PhotoViewFragment.newInstance(this.mPhotoList.get(position));
+        return null;
+    }
+
+    public void setPhotoList(List<Photo> photoList) {
+        this.mPhotoList = photoList;
+        notifyDataSetChanged();
     }
 }

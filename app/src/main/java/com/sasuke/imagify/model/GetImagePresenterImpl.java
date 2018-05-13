@@ -1,7 +1,7 @@
 package com.sasuke.imagify.model;
 
 import com.sasuke.imagify.model.pojo.Result;
-import com.sasuke.imagify.network.FlickrApi;
+import com.sasuke.imagify.network.FlickrService;
 import com.sasuke.imagify.presenter.GetImagesPresenter;
 import com.sasuke.imagify.ui.view.GetImagesView;
 import com.sasuke.imagify.util.NetworkUtil;
@@ -17,15 +17,19 @@ import retrofit2.Response;
 public class GetImagePresenterImpl implements GetImagesPresenter {
 
     private GetImagesView mGetImagesView;
+    private FlickrService flickrService;
+    private NetworkUtil networkUtil;
 
-    public GetImagePresenterImpl(GetImagesView getImagesView) {
+    public GetImagePresenterImpl(FlickrService flickrService, GetImagesView getImagesView, NetworkUtil networkUtil) {
+        this.flickrService = flickrService;
         this.mGetImagesView = getImagesView;
+        this.networkUtil = networkUtil;
     }
 
     @Override
     public void getImageForTag(String method, String format, String api_key, int nojsoncallback, String tags, int page) {
-//        if (NetworkUtil.isConnected()) {
-            FlickrApi.getInstance()
+        if (networkUtil.isConnected()) {
+            flickrService
                     .getImageForTag(method, format, api_key, nojsoncallback, tags, page)
                     .enqueue(new Callback<Result>() {
                         @Override
@@ -38,8 +42,8 @@ public class GetImagePresenterImpl implements GetImagesPresenter {
                             mGetImagesView.onGetImageFailure(t);
                         }
                     });
-//        } else {
-//            mGetImagesView.onNetworkConnectionError();
-//        }
+        } else {
+            mGetImagesView.onNetworkConnectionError();
+        }
     }
 }

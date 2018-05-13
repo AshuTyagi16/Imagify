@@ -12,15 +12,18 @@ import com.sasuke.imagify.Imagify;
 
 public class NetworkUtil {
 
-    private NetworkUtil() {
+    private Context context;
+
+    public NetworkUtil(Context context) {
+        this.context = context;
     }
 
-    private static ConnectivityManager getConnectivityManager() {
-        return (ConnectivityManager) Imagify.getAppContext()
+    private ConnectivityManager getConnectivityManager() {
+        return (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
-    public static boolean isConnected() {
+    public boolean isConnected() {
         NetworkInfo networkInfo = getConnectivityManager().getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected()
                 && !networkInfo.isRoaming();

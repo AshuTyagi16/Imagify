@@ -21,8 +21,10 @@ import com.sasuke.imagify.R;
 import com.sasuke.imagify.adapter.ImagesAdapter;
 import com.sasuke.imagify.db.ImagifyDatabaseAdapter;
 import com.sasuke.imagify.db.ImagifyDatabaseManager;
+import com.sasuke.imagify.di.component.DaggerHomeActivityComponent;
+import com.sasuke.imagify.di.component.HomeActivityComponent;
+import com.sasuke.imagify.di.module.HomeActivityModule;
 import com.sasuke.imagify.event.PositionChangedEvent;
-import com.sasuke.imagify.model.GetImagePresenterImpl;
 import com.sasuke.imagify.model.pojo.Photo;
 import com.sasuke.imagify.model.pojo.Result;
 import com.sasuke.imagify.presenter.GetImagesPresenter;
@@ -30,12 +32,15 @@ import com.sasuke.imagify.ui.view.GetImagesView;
 import com.sasuke.imagify.ui.view.LoadingListItemCreator;
 import com.sasuke.imagify.util.Constants;
 import com.sasuke.imagify.util.ItemDecorator;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,13 +64,22 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    private ImagesAdapter mAdapter;
-    private GetImagesPresenter mGetImagesPresenter;
-    private GridLayoutManager mGridLayoutManager;
+    @Inject
+    ImagesAdapter mAdapter;
+    @Inject
+    GetImagesPresenter mGetImagesPresenter;
+    @Inject
+    GridLayoutManager mGridLayoutManager;
+    @Inject
+    LoadingListItemCreator mLoadingListItemCreator;
+    @Inject
+    Picasso picasso;
+    @Inject
+    ImagifyDatabaseAdapter databaseAdapter;
+    @Inject
+    ItemDecorator itemDecorator;
 
-    private int SPAN_COUNT = 2;
-
-    private LoadingListItemCreator mLoadingListItemCreator;
+    private int SPAN_COUNT = Constants.INITIAL_SPAN_COUNT;
     private Paginate paginate;
     private boolean loading = false;
     private int totalPages;
@@ -76,8 +90,8 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
 
     public static int currentPosition;
 
-    private ImagifyDatabaseAdapter databaseAdapter;
     private List<String> queries;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,15 +100,18 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
         ButterKnife.bind(this);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.white));
         setSupportActionBar(toolbar);
-        mGridLayoutManager = new GridLayoutManager(this, SPAN_COUNT);
+        HomeActivityComponent component = DaggerHomeActivityComponent.builder()
+                .homeActivityModule(new HomeActivityModule(HomeActivity.this, this))
+                .imagifyApplicationComponent(Imagify.get(this).getApplicationComponent())
+                .build();
+
+        component.injectHomeActivity(this);
+
         mRvPhotos.setLayoutManager(mGridLayoutManager);
-        mRvPhotos.addItemDecoration(new ItemDecorator(0));
-        mAdapter = new ImagesAdapter();
+        mRvPhotos.addItemDecoration(itemDecorator);
         mRvPhotos.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener(this);
-        mLoadingListItemCreator = new LoadingListItemCreator();
-        mGetImagesPresenter = new GetImagePresenterImpl(this);
-        databaseAdapter = ImagifyDatabaseAdapter.getInstance(Imagify.getAppContext());
+
         setPagination();
         setSearchViewListeners();
         showSuggestions();

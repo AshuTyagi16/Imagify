@@ -18,4 +18,12 @@ public class Constants {
 
     public static final int FLAG_UNCHANGED = 0;
     public static final int FLAG_CHANGED = 1;
+
+    public static final String CACHE_DIR = "http-cache";
+    public static final int CACHE_SIZE = 100 * 1000 * 1000;  //100 MB
+
+    public static final int SPACING = 0;
+    public static final int INITIAL_SPAN_COUNT = 2;
+
+    public static final String BASE_URL = "https://api.flickr.com/services/";
 }

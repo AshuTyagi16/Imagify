@@ -9,6 +9,7 @@ import com.sasuke.imagify.R;
 import com.sasuke.imagify.model.pojo.Photo;
 import com.sasuke.imagify.ui.view.ImageViewHolder;
 import com.sasuke.imagify.util.Constants;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +24,16 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImageViewHolder> impleme
 
     private OnItemClickListener onItemClickListsner;
 
+    private Picasso picasso;
+
+    public ImagesAdapter(Picasso picasso) {
+        this.picasso = picasso;
+    }
+
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ImageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_image, parent, false));
+        return new ImageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_image, parent, false), picasso);
     }
 
     @Override

@@ -20,9 +20,10 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.iv_movie_image)
     ImageView mIvPhoto;
 
+    private Picasso picasso;
     private OnItemClickListsner onItemClickListsner;
 
-    public ImageViewHolder(View itemView) {
+    public ImageViewHolder(View itemView, Picasso picasso) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         itemView.setOnClickListener(new View.OnClickListener() {
@@ -32,10 +33,11 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
                     onItemClickListsner.onItemClick(getAdapterPosition());
             }
         });
+        this.picasso = picasso;
     }
 
     public void setImage(Photo photo) {
-        Picasso.get().load("https://farm"
+        picasso.load("https://farm"
                 + photo.getFarm()
                 + ".staticflickr.com/"
                 + photo.getServer()
