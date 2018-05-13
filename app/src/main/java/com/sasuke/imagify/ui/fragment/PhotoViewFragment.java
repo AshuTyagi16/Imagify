@@ -43,7 +43,7 @@ public class PhotoViewFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mIvPhoto.setTransitionName(String.valueOf(imageRes));
+//            mIvPhoto.setTransitionName(String.valueOf(imageRes));
         }
         if (getArguments() != null) {
             mPhoto = new Gson().fromJson(getArguments().getString(EXTRA_PHOTO), Photo.class);

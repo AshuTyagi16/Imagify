@@ -2,7 +2,9 @@ package com.sasuke.imagify.ui.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -164,7 +166,9 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
     @Override
     public void onItemClick(List<Photo> photoList, int position) {
         currentPosition = position;
-        startActivity(ImagePagerActivity.newIntent(this, photoList));
+        Pair<View, String> pair = Pair.create(findViewById(R.id.iv_movie_image), "myimage");
+        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, pair);
+        startActivity(ImagePagerActivity.newIntent(this, photoList), optionsCompat.toBundle());
     }
 
     @Override
