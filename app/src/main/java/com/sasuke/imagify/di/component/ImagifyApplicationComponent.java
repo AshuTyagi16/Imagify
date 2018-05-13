@@ -5,11 +5,9 @@ import com.sasuke.imagify.di.module.DatabaseModule;
 import com.sasuke.imagify.di.module.FlickrServiceModule;
 import com.sasuke.imagify.di.module.NetworkManagerModule;
 import com.sasuke.imagify.di.module.PicassoModule;
-import com.sasuke.imagify.di.module.PreferenceManagerModule;
 import com.sasuke.imagify.di.scope.ImagifyApplicationScope;
 import com.sasuke.imagify.network.FlickrService;
 import com.sasuke.imagify.util.NetworkUtil;
-import com.sasuke.imagify.util.PreferenceUtil;
 import com.squareup.picasso.Picasso;
 
 import dagger.Component;
@@ -19,8 +17,7 @@ import dagger.Component;
  */
 
 @Component(modules = {FlickrServiceModule.class, DatabaseModule.class,
-        PicassoModule.class, PreferenceManagerModule.class,
-        NetworkManagerModule.class})
+        PicassoModule.class, NetworkManagerModule.class})
 @ImagifyApplicationScope
 public interface ImagifyApplicationComponent {
 
@@ -29,8 +26,6 @@ public interface ImagifyApplicationComponent {
     FlickrService getFlickrService();
 
     NetworkUtil getNetworkUtil();
-
-    PreferenceUtil getPreferenceUtil();
 
     ImagifyDatabaseAdapter getDatabaseAdapter();
 }

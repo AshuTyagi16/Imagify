@@ -79,6 +79,7 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
     @Inject
     ItemDecorator itemDecorator;
 
+    //Pagination
     private int SPAN_COUNT = Constants.INITIAL_SPAN_COUNT;
     private Paginate paginate;
     private boolean loading = false;
@@ -91,7 +92,6 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
     public static int currentPosition;
 
     private List<String> queries;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -171,8 +171,17 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
     @Override
     public void onNetworkConnectionError() {
         loading = false;
-        showConnectionPlaceholder();
-        Toasty.error(this, getString(R.string.no_internet_connection)).show();
+        if (ImagifyDatabaseManager.isQueryCached(databaseAdapter, currentQuery)) {
+            mGetImagesPresenter.getImageForTag(Constants.METHOD,
+                    Constants.FORMAT,
+                    Constants.API_KEY,
+                    Constants.NO_JSON_CALLBACK,
+                    currentQuery,
+                    page);
+        } else {
+            showConnectionPlaceholder();
+            Toasty.error(this, getString(R.string.no_internet_connection)).show();
+        }
     }
 
     @Override
@@ -279,11 +288,11 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
 
     private void getImages(String query) {
         if (mGetImagesPresenter != null) {
-            mGetImagesPresenter.getImageForTag(Constants.METHOD,
+            mGetImagesPresenter.checkConnectionAndGetImageForTag(Constants.METHOD,
                     Constants.FORMAT,
                     Constants.API_KEY,
                     Constants.NO_JSON_CALLBACK,
-                    query,
+                    currentQuery,
                     page);
         }
     }

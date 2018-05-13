@@ -50,4 +50,21 @@ public class ImagifyDatabaseManager {
         }
         return queries;
     }
+
+    public static boolean isQueryCached(ImagifyDatabaseAdapter databaseAdapter, String query) {
+        boolean isQueryCached = false;
+        if (databaseAdapter != null) {
+            sqLiteDatabase = databaseAdapter.getReadableDatabase();
+
+            Cursor cursor = sqLiteDatabase.query(TABLE_NAME, new String[]{QUERY}, QUERY + " =? ",
+                    new String[]{String.valueOf(query)}, null, null, null, null);
+
+            cursor.moveToFirst();
+            if (cursor.getCount() > 0) {
+                isQueryCached = true;
+            }
+            cursor.close();
+        }
+        return isQueryCached;
+    }
 }

@@ -27,23 +27,32 @@ public class GetImagePresenterImpl implements GetImagesPresenter {
     }
 
     @Override
-    public void getImageForTag(String method, String format, String api_key, int nojsoncallback, String tags, int page) {
+    public void checkConnectionAndGetImageForTag(String method, String format, String api_key, int nojsoncallback, String tags, int page) {
         if (networkUtil.isConnected()) {
-            flickrService
-                    .getImageForTag(method, format, api_key, nojsoncallback, tags, page)
-                    .enqueue(new Callback<Result>() {
-                        @Override
-                        public void onResponse(Call<Result> call, Response<Result> response) {
-                            mGetImagesView.onGetImageSuccess(response.body());
-                        }
-
-                        @Override
-                        public void onFailure(Call<Result> call, Throwable t) {
-                            mGetImagesView.onGetImageFailure(t);
-                        }
-                    });
+            getImages(method, format, api_key, nojsoncallback, tags, page);
         } else {
             mGetImagesView.onNetworkConnectionError();
         }
+    }
+
+    @Override
+    public void getImageForTag(String method, String format, String api_key, int nojsoncallback, String tags, int page) {
+        getImages(method, format, api_key, nojsoncallback, tags, page);
+    }
+
+    private void getImages(String method, String format, String api_key, int nojsoncallback, String tags, int page) {
+        flickrService
+                .getImageForTag(method, format, api_key, nojsoncallback, tags, page)
+                .enqueue(new Callback<Result>() {
+                    @Override
+                    public void onResponse(Call<Result> call, Response<Result> response) {
+                        mGetImagesView.onGetImageSuccess(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Result> call, Throwable t) {
+                        mGetImagesView.onGetImageFailure(t);
+                    }
+                });
     }
 }
