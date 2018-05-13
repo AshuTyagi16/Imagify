@@ -17,12 +17,15 @@ import com.paginate.Paginate;
 import com.sasuke.imagify.R;
 import com.sasuke.imagify.adapter.ImagesAdapter;
 import com.sasuke.imagify.model.GetImagePresenterImpl;
+import com.sasuke.imagify.model.pojo.Photo;
 import com.sasuke.imagify.model.pojo.Result;
 import com.sasuke.imagify.presenter.GetImagesPresenter;
 import com.sasuke.imagify.ui.view.GetImagesView;
 import com.sasuke.imagify.ui.view.LoadingListItemCreator;
 import com.sasuke.imagify.util.Constants;
 import com.sasuke.imagify.util.ItemDecorator;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,7 +37,7 @@ import fr.castorflex.android.circularprogressbar.CircularProgressBar;
  * Created by abc on 5/12/2018.
  */
 
-public class HomeActivity extends AppCompatActivity implements GetImagesView, Paginate.Callbacks {
+public class HomeActivity extends AppCompatActivity implements GetImagesView, Paginate.Callbacks, ImagesAdapter.OnItemClickListener {
 
     @BindView(R.id.rv_photos)
     RecyclerView mRvPhotos;
@@ -62,6 +65,8 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
     private String currentQuery;
     private int flag = Constants.FLAG_UNCHANGED;
 
+    public static int currentPosition;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,11 +79,14 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
         mRvPhotos.addItemDecoration(new ItemDecorator(0));
         mAdapter = new ImagesAdapter();
         mRvPhotos.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener(this);
         mLoadingListItemCreator = new LoadingListItemCreator();
         mGetImagesPresenter = new GetImagePresenterImpl(this);
+
         setPagination();
         setSearchViewListeners();
         showSearchPlaceholder();
+        scrollToPosition();
     }
 
     @Override
@@ -151,6 +159,12 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
     @Override
     public boolean hasLoadedAllItems() {
         return page == totalPages;
+    }
+
+    @Override
+    public void onItemClick(List<Photo> photoList, int position) {
+        currentPosition = position;
+        startActivity(ImagePagerActivity.newIntent(this, photoList));
     }
 
     @Override
@@ -232,6 +246,7 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
                 showLoadingPlaceholder();
                 flag = Constants.FLAG_CHANGED;
                 currentQuery = query;
+                currentPosition = 0;
                 getImages(currentQuery);
                 return false;
             }
@@ -239,6 +254,34 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
+            }
+        });
+    }
+
+    private void scrollToPosition() {
+        mRvPhotos.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v,
+                                       int left,
+                                       int top,
+                                       int right,
+                                       int bottom,
+                                       int oldLeft,
+                                       int oldTop,
+                                       int oldRight,
+                                       int oldBottom) {
+                mRvPhotos.removeOnLayoutChangeListener(this);
+                final RecyclerView.LayoutManager layoutManager = mRvPhotos.getLayoutManager();
+                View viewAtPosition = layoutManager.findViewByPosition(HomeActivity.currentPosition);
+                if (viewAtPosition == null || layoutManager
+                        .isViewPartiallyVisible(viewAtPosition, false, true)) {
+                    mRvPhotos.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            layoutManager.scrollToPosition(HomeActivity.currentPosition);
+                        }
+                    });
+                }
             }
         });
     }

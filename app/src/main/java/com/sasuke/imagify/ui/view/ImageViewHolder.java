@@ -20,9 +20,18 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.iv_movie_image)
     ImageView mIvPhoto;
 
+    private OnItemClickListsner onItemClickListsner;
+
     public ImageViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onItemClickListsner != null)
+                    onItemClickListsner.onItemClick(getAdapterPosition());
+            }
+        });
     }
 
     public void setImage(Photo photo) {
@@ -38,5 +47,13 @@ public class ImageViewHolder extends RecyclerView.ViewHolder {
                 .error(R.drawable.placeholder_image_error)
                 .placeholder(R.drawable.placeholder_image_loading)
                 .into(mIvPhoto);
+    }
+
+    public void setOnItemClickListener(OnItemClickListsner onItemClickListener) {
+        this.onItemClickListsner = onItemClickListener;
+    }
+
+    public interface OnItemClickListsner {
+        void onItemClick(int position);
     }
 }

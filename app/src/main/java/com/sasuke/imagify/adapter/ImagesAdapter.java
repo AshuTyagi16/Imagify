@@ -17,9 +17,11 @@ import java.util.List;
  * Created by abc on 5/12/2018.
  */
 
-public class ImagesAdapter extends RecyclerView.Adapter<ImageViewHolder> {
+public class ImagesAdapter extends RecyclerView.Adapter<ImageViewHolder> implements ImageViewHolder.OnItemClickListsner {
 
     private List<Photo> mImageList = new ArrayList<>();
+
+    private OnItemClickListener onItemClickListsner;
 
     @NonNull
     @Override
@@ -30,6 +32,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImageViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         holder.setImage(this.mImageList.get(position));
+        holder.setOnItemClickListener(this);
     }
 
     @Override
@@ -37,10 +40,26 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImageViewHolder> {
         return this.mImageList == null ? 0 : this.mImageList.size();
     }
 
+
+    @Override
+    public void onItemClick(int position) {
+        if (onItemClickListsner != null)
+            onItemClickListsner.onItemClick(mImageList, position);
+    }
+
     public void setImageList(List<Photo> list, int flag) {
         if (flag == Constants.FLAG_CHANGED)
             this.mImageList.clear();
         this.mImageList.addAll(list);
         notifyDataSetChanged();
+    }
+
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListsner = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(List<Photo> photoList, int position);
     }
 }
