@@ -1,3 +1,5 @@
+# Imagify
+
 This is demo project having the below features:
 
 1. You can search for images at the HomePage for any tag (using Flickr API).
