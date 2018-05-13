@@ -1,14 +1,18 @@
 package com.sasuke.imagify.ui.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +32,7 @@ import com.sasuke.imagify.util.Constants;
 import com.sasuke.imagify.util.ItemDecorator;
 
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,6 +94,9 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
         setSearchViewListeners();
         showSearchPlaceholder();
         scrollToPosition();
+
+//        prepareTransitions();
+//        postponeEnterTransition();
     }
 
     @Override
@@ -288,5 +296,27 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
                 }
             }
         });
+    }
+
+    private void prepareTransitions() {
+        Transition transition = TransitionInflater.from(this)
+                    .inflateTransition(R.transition.grid_exit_transition);
+            this.getWindow().setExitTransition(transition);
+
+        setExitSharedElementCallback(
+                new SharedElementCallback() {
+                    @Override
+                    public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                        // Locate the ViewHolder for the clicked position.
+                        RecyclerView.ViewHolder selectedViewHolder = mRvPhotos
+                                .findViewHolderForAdapterPosition(HomeActivity.currentPosition);
+                        if (selectedViewHolder == null || selectedViewHolder.itemView == null) {
+                            return;
+                        }
+
+                        sharedElements
+                                .put(names.get(0), selectedViewHolder.itemView.findViewById(R.id.iv_movie_image));
+                    }
+                });
     }
 }
