@@ -21,6 +21,7 @@ import com.sasuke.imagify.R;
 import com.sasuke.imagify.adapter.ImagesAdapter;
 import com.sasuke.imagify.db.ImagifyDatabaseAdapter;
 import com.sasuke.imagify.db.ImagifyDatabaseManager;
+import com.sasuke.imagify.event.PositionChangedEvent;
 import com.sasuke.imagify.model.GetImagePresenterImpl;
 import com.sasuke.imagify.model.pojo.Photo;
 import com.sasuke.imagify.model.pojo.Result;
@@ -29,6 +30,10 @@ import com.sasuke.imagify.ui.view.GetImagesView;
 import com.sasuke.imagify.ui.view.LoadingListItemCreator;
 import com.sasuke.imagify.util.Constants;
 import com.sasuke.imagify.util.ItemDecorator;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -179,12 +184,80 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
     public void onBackPressed() {
         if (searchView.isSearchOpen()) {
             searchView.closeSearch();
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onPositionChangedEvent(PositionChangedEvent event) {
+        scrollToPosition();
+    }
+
+    private void setSearchViewListeners() {
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (!queries.contains(query)) {
+                    ImagifyDatabaseManager.addQuery(databaseAdapter, query);
+                    showSuggestions();
+                }
+                showLoadingPlaceholder();
+                flag = Constants.FLAG_CHANGED;
+                currentQuery = query;
+                currentPosition = 0;
+                getImages(currentQuery);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    private void scrollToPosition() {
+        mRvPhotos.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v,
+                                       int left,
+                                       int top,
+                                       int right,
+                                       int bottom,
+                                       int oldLeft,
+                                       int oldTop,
+                                       int oldRight,
+                                       int oldBottom) {
+                mRvPhotos.removeOnLayoutChangeListener(this);
+                final RecyclerView.LayoutManager layoutManager = mRvPhotos.getLayoutManager();
+                View viewAtPosition = layoutManager.findViewByPosition(HomeActivity.currentPosition);
+                if (viewAtPosition == null || layoutManager
+                        .isViewPartiallyVisible(viewAtPosition, false, true)) {
+                    mRvPhotos.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            layoutManager.scrollToPosition(HomeActivity.currentPosition);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private void getImages(String query) {
@@ -246,57 +319,6 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
                 .addLoadingListItem(true)
                 .setLoadingListItemCreator(mLoadingListItemCreator)
                 .build();
-    }
-
-    private void setSearchViewListeners() {
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if (!queries.contains(query)) {
-                    ImagifyDatabaseManager.addQuery(databaseAdapter, query);
-                    showSuggestions();
-                }
-                showLoadingPlaceholder();
-                flag = Constants.FLAG_CHANGED;
-                currentQuery = query;
-                currentPosition = 0;
-                getImages(currentQuery);
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-    }
-
-    private void scrollToPosition() {
-        mRvPhotos.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v,
-                                       int left,
-                                       int top,
-                                       int right,
-                                       int bottom,
-                                       int oldLeft,
-                                       int oldTop,
-                                       int oldRight,
-                                       int oldBottom) {
-                mRvPhotos.removeOnLayoutChangeListener(this);
-                final RecyclerView.LayoutManager layoutManager = mRvPhotos.getLayoutManager();
-                View viewAtPosition = layoutManager.findViewByPosition(HomeActivity.currentPosition);
-                if (viewAtPosition == null || layoutManager
-                        .isViewPartiallyVisible(viewAtPosition, false, true)) {
-                    mRvPhotos.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            layoutManager.scrollToPosition(HomeActivity.currentPosition);
-                        }
-                    });
-                }
-            }
-        });
     }
 
     private void showSuggestions() {

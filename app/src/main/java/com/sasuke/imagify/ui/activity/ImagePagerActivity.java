@@ -8,8 +8,11 @@ import android.view.MenuItem;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sasuke.imagify.event.PositionChangedEvent;
 import com.sasuke.imagify.model.pojo.Photo;
 import com.sasuke.imagify.ui.fragment.ImagePagerFragment;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -57,5 +60,11 @@ public class ImagePagerActivity extends SingleFragmentActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().postSticky(new PositionChangedEvent());
     }
 }

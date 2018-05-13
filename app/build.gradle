@@ -77,4 +77,7 @@ dependencies {
 
     //Remember Action Bar EditText
     implementation 'com.miguelcatalan:materialsearchview:1.4.0'
+
+    //EventBus
+    implementation 'org.greenrobot:eventbus:3.1.1'
 }
