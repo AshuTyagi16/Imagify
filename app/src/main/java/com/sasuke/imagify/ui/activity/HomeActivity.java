@@ -159,6 +159,10 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
             showNoResultFoundPlaceholder();
             Toasty.error(this, getString(R.string.no_result_placeholder)).show();
         }
+        if (!queries.contains(currentQuery)) {
+            ImagifyDatabaseManager.addQuery(databaseAdapter, currentQuery);
+            showSuggestions();
+        }
     }
 
     @Override
@@ -239,10 +243,6 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if (!queries.contains(query)) {
-                    ImagifyDatabaseManager.addQuery(databaseAdapter, query);
-                    showSuggestions();
-                }
                 showLoadingPlaceholder();
                 flag = Constants.FLAG_CHANGED;
                 currentQuery = query;
