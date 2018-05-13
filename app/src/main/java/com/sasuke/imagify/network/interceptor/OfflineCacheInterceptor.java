@@ -12,16 +12,12 @@ import okhttp3.Request;
 
 public class OfflineCacheInterceptor implements Interceptor {
 
-
-    private NetworkUtil networkManager;
-
-    public OfflineCacheInterceptor(NetworkUtil networkManager) {
-        this.networkManager = networkManager;
+    public OfflineCacheInterceptor() {
     }
 
     public okhttp3.Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        if (!networkManager.isConnected()) {
+        if (!NetworkUtil.isConnected()) {
             request = request.newBuilder().cacheControl(new CacheControl.Builder().maxStale(7, TimeUnit.DAYS).build()).build();
         }
         return chain.proceed(request);

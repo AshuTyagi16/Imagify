@@ -2,8 +2,14 @@ package com.sasuke.imagify.network;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sasuke.imagify.Imagify;
 import com.sasuke.imagify.model.pojo.Result;
+import com.sasuke.imagify.network.interceptor.CacheInterceptor;
+import com.sasuke.imagify.network.interceptor.OfflineCacheInterceptor;
 
+import java.io.File;
+
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -57,9 +63,20 @@ public class FlickrApi {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .addInterceptor(logging);
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.interceptors().add(logging);
+        builder.addInterceptor(new OfflineCacheInterceptor());
+        builder.addNetworkInterceptor(new CacheInterceptor());
+        builder.cache(provideCache());
 
         return builder.build();
+    }
+
+    private Cache provideCache() {
+        try {
+            return new Cache(new File(Imagify.getAppContext().getCacheDir(), "http-cache"), 100 * 1000 * 1000);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

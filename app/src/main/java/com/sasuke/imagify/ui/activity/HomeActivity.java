@@ -1,18 +1,14 @@
 package com.sasuke.imagify.ui.activity;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,8 +16,11 @@ import android.widget.ImageView;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.paginate.Paginate;
+import com.sasuke.imagify.Imagify;
 import com.sasuke.imagify.R;
 import com.sasuke.imagify.adapter.ImagesAdapter;
+import com.sasuke.imagify.db.ImagifyDatabaseAdapter;
+import com.sasuke.imagify.db.ImagifyDatabaseManager;
 import com.sasuke.imagify.model.GetImagePresenterImpl;
 import com.sasuke.imagify.model.pojo.Photo;
 import com.sasuke.imagify.model.pojo.Result;
@@ -32,11 +31,9 @@ import com.sasuke.imagify.util.Constants;
 import com.sasuke.imagify.util.ItemDecorator;
 
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import es.dmoral.toasty.Toasty;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 
@@ -74,6 +71,9 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
 
     public static int currentPosition;
 
+    private ImagifyDatabaseAdapter databaseAdapter;
+    private List<String> queries;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,14 +89,13 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
         mAdapter.setOnItemClickListener(this);
         mLoadingListItemCreator = new LoadingListItemCreator();
         mGetImagesPresenter = new GetImagePresenterImpl(this);
-
+        databaseAdapter = ImagifyDatabaseAdapter.getInstance(Imagify.getAppContext());
         setPagination();
         setSearchViewListeners();
+        showSuggestions();
         showSearchPlaceholder();
         scrollToPosition();
 
-//        prepareTransitions();
-//        postponeEnterTransition();
     }
 
     @Override
@@ -250,11 +249,13 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
     }
 
     private void setSearchViewListeners() {
-        searchView.setSuggestions(new String[]{"New york", "India", "Avengers", "Whore", "Starboy"});
-        searchView.showSuggestions();
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                if (!queries.contains(query)) {
+                    ImagifyDatabaseManager.addQuery(databaseAdapter, query);
+                    showSuggestions();
+                }
                 showLoadingPlaceholder();
                 flag = Constants.FLAG_CHANGED;
                 currentQuery = query;
@@ -298,25 +299,14 @@ public class HomeActivity extends AppCompatActivity implements GetImagesView, Pa
         });
     }
 
-    private void prepareTransitions() {
-        Transition transition = TransitionInflater.from(this)
-                    .inflateTransition(R.transition.grid_exit_transition);
-            this.getWindow().setExitTransition(transition);
-
-        setExitSharedElementCallback(
-                new SharedElementCallback() {
-                    @Override
-                    public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-                        // Locate the ViewHolder for the clicked position.
-                        RecyclerView.ViewHolder selectedViewHolder = mRvPhotos
-                                .findViewHolderForAdapterPosition(HomeActivity.currentPosition);
-                        if (selectedViewHolder == null || selectedViewHolder.itemView == null) {
-                            return;
-                        }
-
-                        sharedElements
-                                .put(names.get(0), selectedViewHolder.itemView.findViewById(R.id.iv_movie_image));
-                    }
-                });
+    private void showSuggestions() {
+        queries = ImagifyDatabaseManager.getAllQueries(databaseAdapter);
+        if (queries.size() > 0) {
+            String[] suggestions = new String[queries.size()];
+            for (int i = 0; i < queries.size(); i++) {
+                suggestions[i] = queries.get(i);
+            }
+            searchView.setSuggestions(suggestions);
+        }
     }
 }

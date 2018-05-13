@@ -24,7 +24,7 @@ public class GetImagePresenterImpl implements GetImagesPresenter {
 
     @Override
     public void getImageForTag(String method, String format, String api_key, int nojsoncallback, String tags, int page) {
-        if (NetworkUtil.isConnected()) {
+//        if (NetworkUtil.isConnected()) {
             FlickrApi.getInstance()
                     .getImageForTag(method, format, api_key, nojsoncallback, tags, page)
                     .enqueue(new Callback<Result>() {
@@ -38,8 +38,8 @@ public class GetImagePresenterImpl implements GetImagesPresenter {
                             mGetImagesView.onGetImageFailure(t);
                         }
                     });
-        } else {
-            mGetImagesView.onNetworkConnectionError();
-        }
+//        } else {
+//            mGetImagesView.onNetworkConnectionError();
+//        }
     }
 }
