@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.sasuke.imagify.R;
-import com.sasuke.imagify.model.pojo.Photo;
+import com.sasuke.imagify.data.model.pojo.Photo;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;

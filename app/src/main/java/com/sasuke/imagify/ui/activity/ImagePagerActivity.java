@@ -8,8 +8,8 @@ import android.view.MenuItem;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sasuke.imagify.event.PositionChangedEvent;
-import com.sasuke.imagify.model.pojo.Photo;
+import com.sasuke.imagify.data.event.PositionChangedEvent;
+import com.sasuke.imagify.data.model.pojo.Photo;
 import com.sasuke.imagify.ui.fragment.ImagePagerFragment;
 
 import org.greenrobot.eventbus.EventBus;

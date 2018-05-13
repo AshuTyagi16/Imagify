@@ -1,4 +1,4 @@
-package com.sasuke.imagify.db;
+package com.sasuke.imagify.util.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

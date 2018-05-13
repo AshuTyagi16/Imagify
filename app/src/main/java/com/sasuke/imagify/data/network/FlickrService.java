@@ -1,7 +1,7 @@
-package com.sasuke.imagify.network;
+package com.sasuke.imagify.data.network;
 
 
-import com.sasuke.imagify.model.pojo.Result;
+import com.sasuke.imagify.data.model.pojo.Result;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

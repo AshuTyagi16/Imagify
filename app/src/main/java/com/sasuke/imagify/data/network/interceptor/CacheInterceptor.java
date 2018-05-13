@@ -1,4 +1,4 @@
-package com.sasuke.imagify.network.interceptor;
+package com.sasuke.imagify.data.network.interceptor;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

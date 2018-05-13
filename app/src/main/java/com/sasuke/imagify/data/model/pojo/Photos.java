@@ -1,4 +1,4 @@
-package com.sasuke.imagify.model.pojo;
+package com.sasuke.imagify.data.model.pojo;
 
 /**
  * Created by abc on 5/12/2018.

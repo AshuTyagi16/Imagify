@@ -2,7 +2,7 @@ package com.sasuke.imagify.di.module;
 
 import android.content.Context;
 
-import com.sasuke.imagify.db.ImagifyDatabaseAdapter;
+import com.sasuke.imagify.util.db.ImagifyDatabaseAdapter;
 import com.sasuke.imagify.di.scope.ImagifyApplicationScope;
 
 import dagger.Module;

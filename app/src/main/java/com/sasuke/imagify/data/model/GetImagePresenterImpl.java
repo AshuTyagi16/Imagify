@@ -1,8 +1,8 @@
-package com.sasuke.imagify.model;
+package com.sasuke.imagify.data.model;
 
-import com.sasuke.imagify.model.pojo.Result;
-import com.sasuke.imagify.network.FlickrService;
-import com.sasuke.imagify.presenter.GetImagesPresenter;
+import com.sasuke.imagify.data.model.pojo.Result;
+import com.sasuke.imagify.data.network.FlickrService;
+import com.sasuke.imagify.ui.presenter.GetImagesPresenter;
 import com.sasuke.imagify.ui.view.GetImagesView;
 import com.sasuke.imagify.util.NetworkUtil;
 

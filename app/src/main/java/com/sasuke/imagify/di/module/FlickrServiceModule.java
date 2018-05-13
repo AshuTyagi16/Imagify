@@ -3,7 +3,7 @@ package com.sasuke.imagify.di.module;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sasuke.imagify.di.scope.ImagifyApplicationScope;
-import com.sasuke.imagify.network.FlickrService;
+import com.sasuke.imagify.data.network.FlickrService;
 import com.sasuke.imagify.util.Constants;
 
 import dagger.Module;

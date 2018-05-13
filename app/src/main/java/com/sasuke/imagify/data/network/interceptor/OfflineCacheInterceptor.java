@@ -1,4 +1,4 @@
-package com.sasuke.imagify.network.interceptor;
+package com.sasuke.imagify.data.network.interceptor;
 
 
 import com.sasuke.imagify.util.NetworkUtil;

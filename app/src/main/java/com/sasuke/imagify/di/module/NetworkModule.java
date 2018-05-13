@@ -5,8 +5,8 @@ import android.content.Context;
 import com.sasuke.imagify.di.scope.ImagifyApplicationScope;
 import com.sasuke.imagify.di.qualifier.NetworkCacheQualifier;
 import com.sasuke.imagify.di.qualifier.OfflineCacheQualifier;
-import com.sasuke.imagify.network.interceptor.CacheInterceptor;
-import com.sasuke.imagify.network.interceptor.OfflineCacheInterceptor;
+import com.sasuke.imagify.data.network.interceptor.CacheInterceptor;
+import com.sasuke.imagify.data.network.interceptor.OfflineCacheInterceptor;
 import com.sasuke.imagify.util.Constants;
 import com.sasuke.imagify.util.NetworkUtil;
 

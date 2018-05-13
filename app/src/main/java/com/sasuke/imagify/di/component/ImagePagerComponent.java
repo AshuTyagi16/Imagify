@@ -1,6 +1,5 @@
 package com.sasuke.imagify.di.component;
 
-import com.sasuke.imagify.adapter.ImagePagerAdapter;
 import com.sasuke.imagify.di.module.ImagePagerFragmentModule;
 import com.sasuke.imagify.ui.fragment.ImagePagerFragment;
 

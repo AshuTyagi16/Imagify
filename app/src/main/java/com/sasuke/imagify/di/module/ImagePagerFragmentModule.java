@@ -2,7 +2,7 @@ package com.sasuke.imagify.di.module;
 
 import android.support.v4.app.Fragment;
 
-import com.sasuke.imagify.adapter.ImagePagerAdapter;
+import com.sasuke.imagify.ui.adapter.ImagePagerAdapter;
 
 import dagger.Module;
 import dagger.Provides;

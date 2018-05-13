@@ -1,4 +1,4 @@
-package com.sasuke.imagify.presenter;
+package com.sasuke.imagify.ui.presenter;
 
 /**
  * Created by abc on 5/12/2018.

@@ -1,4 +1,4 @@
-package com.sasuke.imagify.event;
+package com.sasuke.imagify.data.event;
 
 /**
  * Created by abc on 5/14/2018.

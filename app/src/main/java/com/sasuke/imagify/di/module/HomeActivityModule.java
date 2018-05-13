@@ -2,11 +2,11 @@ package com.sasuke.imagify.di.module;
 
 import android.support.v7.widget.GridLayoutManager;
 
-import com.sasuke.imagify.adapter.ImagesAdapter;
+import com.sasuke.imagify.ui.adapter.ImagesAdapter;
 import com.sasuke.imagify.di.scope.PerActivityScope;
-import com.sasuke.imagify.model.GetImagePresenterImpl;
-import com.sasuke.imagify.network.FlickrService;
-import com.sasuke.imagify.presenter.GetImagesPresenter;
+import com.sasuke.imagify.data.model.GetImagePresenterImpl;
+import com.sasuke.imagify.data.network.FlickrService;
+import com.sasuke.imagify.ui.presenter.GetImagesPresenter;
 import com.sasuke.imagify.ui.activity.HomeActivity;
 import com.sasuke.imagify.ui.view.GetImagesView;
 import com.sasuke.imagify.ui.view.LoadingListItemCreator;

@@ -1,12 +1,12 @@
 package com.sasuke.imagify.di.component;
 
-import com.sasuke.imagify.db.ImagifyDatabaseAdapter;
+import com.sasuke.imagify.util.db.ImagifyDatabaseAdapter;
 import com.sasuke.imagify.di.module.DatabaseModule;
 import com.sasuke.imagify.di.module.FlickrServiceModule;
 import com.sasuke.imagify.di.module.NetworkManagerModule;
 import com.sasuke.imagify.di.module.PicassoModule;
 import com.sasuke.imagify.di.scope.ImagifyApplicationScope;
-import com.sasuke.imagify.network.FlickrService;
+import com.sasuke.imagify.data.network.FlickrService;
 import com.sasuke.imagify.util.NetworkUtil;
 import com.squareup.picasso.Picasso;
 

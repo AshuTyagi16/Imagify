@@ -9,11 +9,11 @@ import android.view.View;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sasuke.imagify.R;
-import com.sasuke.imagify.adapter.ImagePagerAdapter;
+import com.sasuke.imagify.ui.adapter.ImagePagerAdapter;
 import com.sasuke.imagify.di.component.DaggerImagePagerComponent;
 import com.sasuke.imagify.di.component.ImagePagerComponent;
 import com.sasuke.imagify.di.module.ImagePagerFragmentModule;
-import com.sasuke.imagify.model.pojo.Photo;
+import com.sasuke.imagify.data.model.pojo.Photo;
 import com.sasuke.imagify.ui.activity.HomeActivity;
 
 import java.lang.reflect.Type;

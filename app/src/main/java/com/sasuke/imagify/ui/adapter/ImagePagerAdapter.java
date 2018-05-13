@@ -1,9 +1,9 @@
-package com.sasuke.imagify.adapter;
+package com.sasuke.imagify.ui.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.sasuke.imagify.model.pojo.Photo;
+import com.sasuke.imagify.data.model.pojo.Photo;
 import com.sasuke.imagify.ui.fragment.PhotoViewFragment;
 
 import java.util.List;

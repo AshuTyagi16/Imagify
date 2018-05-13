@@ -1,4 +1,4 @@
-package com.sasuke.imagify.adapter;
+package com.sasuke.imagify.ui.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.sasuke.imagify.R;
-import com.sasuke.imagify.model.pojo.Photo;
+import com.sasuke.imagify.data.model.pojo.Photo;
 import com.sasuke.imagify.ui.view.ImageViewHolder;
 import com.sasuke.imagify.util.Constants;
 import com.squareup.picasso.Picasso;

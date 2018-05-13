@@ -11,7 +11,7 @@ import com.sasuke.imagify.Imagify;
 import com.sasuke.imagify.R;
 import com.sasuke.imagify.di.component.DaggerPhotoViewFragmentComponent;
 import com.sasuke.imagify.di.component.PhotoViewFragmentComponent;
-import com.sasuke.imagify.model.pojo.Photo;
+import com.sasuke.imagify.data.model.pojo.Photo;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
